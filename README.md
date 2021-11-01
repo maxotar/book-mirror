@@ -1,3 +1,3 @@
-# book-pride-and-prejudice
+# Book Mirror
 
-P5.js script for animating _Pride and Prejudice_ book covers and exporting pngs for use with ffmpeg.
+P5.js script for expanding book covers by mirroring it onto the sides.

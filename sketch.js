@@ -1,64 +1,56 @@
 "use strict";
 
-let p5Canvas;
+const titles = [
+  "crime_and_punishment",
+  "pride_and_prejudice",
+  "persuasion",
+  "the_great_gatsby",
+  "a_portrait_of_the_artist_as_a_young_man",
+  "dune",
+  "the_old_man_and_the_sea",
+  "the_brothers_karamazov",
+  "the_trial",
+  "1984",
+  "dubliners",
+  "to_kill_a_mockingbird",
+  "animal_farm",
+  "slaughterhouse-five",
+  "foundation",
+  "a_gentleman_in_moscow",
+];
 
-const images = [];
-const fps = 30;
-const framesForward = fps * 2;
-const framesLimit = framesForward * 2;
-const shouldRecord = false;
-
-const capturer = new CCapture({
-  framerate: fps,
-  format: "png",
-  name: "pngs",
-  quality: 100,
-});
+let books;
 
 function preload() {
-  images.push(loadImage("./assets/cap2.jpg"));
-  images.push(loadImage("./assets/cap3.jpg"));
-  images.push(loadImage("./assets/cap4.jpg"));
-  images.push(loadImage("./assets/cap5.jpg"));
-  images.push(loadImage("./assets/cap7.jpg"));
+  books = titles.map((book) => {
+    return {
+      title: book,
+      img: loadImage(`assets/${book}.jpg`),
+    };
+  });
 }
 
 function setup() {
-  p5Canvas = createCanvas(1080, 1920);
-  frameRate(fps);
+  createCanvas(1080, 1080);
+  noLoop();
+  imageMode(CENTER);
 }
 
 function draw() {
-  if (shouldRecord && frameCount === 1) {
-    capturer.start();
-  }
-
-  if (frameCount > framesLimit) {
-    if (shouldRecord) {
-      capturer.stop();
-      capturer.save();
-    }
-    noLoop();
-    return;
-  }
-
-  render();
-
-  if (shouldRecord) {
-    capturer.capture(p5Canvas.canvas);
-  }
+  books.forEach((book) => {
+    render(book.img);
+    saveCanvas(book.title);
+  });
 }
 
-function render() {
-  const dWidth = width / images.length;
+function render(img) {
+  const w2h = img.width / img.height;
+  const wDraw = height * w2h;
+  image(img, width / 2, height / 2, wDraw, height);
 
-  images.forEach((img, i) => {
-    const sWidth = (dWidth / height) * img.height;
-    const sWidthStep = (img.width - sWidth) / framesForward;
-    const sx =
-      frameCount <= framesForward
-        ? frameCount * sWidthStep
-        : (framesLimit - frameCount) * sWidthStep;
-    image(img, i * dWidth, 0, dWidth, height, sx, 0, sWidth, 0);
-  });
+  push();
+  scale(-1, 1);
+  image(img, wDraw - width / 2, height / 2, wDraw, height);
+  image(img, -wDraw - width / 2, height / 2, wDraw, height);
+  pop();
 }
